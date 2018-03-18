@@ -20,10 +20,12 @@ float tiempo=0;
 float ang=0;
 double x=0,y=0;
 double posx=0,posy=0;
-int turno=1;
+int turno=2;
 int flecha=0;
 int locked =0;
 int potencia = 0;
+int viento = 0;
+char str[] = "";
 
 unsigned char * datosBg;
 unsigned char * datosPer;
@@ -31,6 +33,13 @@ unsigned char * datosAr;
 unsigned char * datosIs;
 unsigned char * datosFl;
 unsigned char * datosTi;
+
+void dibujaTexto(char * mensaje)
+{
+    while (*mensaje) {
+        glutStrokeCharacter(GLUT_STROKE_ROMAN,*mensaje++);
+    }
+}
 
 void leerBackground(){
     FILE *imagen;
@@ -140,6 +149,21 @@ void dibujarFlecha(){
 
 }
 
+void generarViento(){
+    viento = rand() % 11;
+    int dir = rand() % 2+1;
+    if(viento!=0){
+        if(dir==1){
+            sprintf(str, "%d -->",viento);
+            viento=viento*-1;
+        }else{
+            sprintf(str, "%d <--",viento);
+        }
+    }else{
+        sprintf(str, "%d --",viento);
+    }
+}
+
 int checarLimites(float x,float y){
     if ((x<566)&&(y<214)&&(x>390)&&(y>96)) {
         return 1;
@@ -161,6 +185,7 @@ void reiniciar(){
     posx= 0;
     posy=0;
     flecha=0;
+    generarViento();
     glutPostRedisplay();
 }
 
@@ -169,13 +194,27 @@ void temp(int value){
         case 1:
             locked=1;
             flecha=1;
-            x = (50+potencia*10)*tiempo*cos(7*PI/36+ang/36)-(10*pow(tiempo,2))/2;
+            x = (50+potencia*10)*tiempo*cos(7*PI/36+ang/36)-(viento*pow(tiempo,2))/2;
             y = (50+potencia*10)*tiempo*sin(7*PI/36+ang/36)-(9.81*pow(tiempo, 2))/2;
             printf("(%f,%f)\n",x,y);
             tiempo+=0.05;
             glutPostRedisplay();
             if(checarLimites(posx, posy)!=1){
                 glutTimerFunc(10, temp, 1);
+            }else{
+                locked =0;
+            }
+            break;
+        case 2:
+            locked=1;
+            flecha=1;
+            x = (50+potencia*10)*tiempo*cos(25*PI/36-ang/36)-(viento*pow(tiempo,2))/2;
+            y = (50+potencia*10)*tiempo*sin(25*PI/36-ang/36)-(9.81*pow(tiempo, 2))/2;
+            printf("(%f,%f)\n",x,y);
+            tiempo+=0.05;
+            glutPostRedisplay();
+            if(checarLimites(posx, posy)!=1){
+                glutTimerFunc(10, temp, 2);
             }else{
                 locked =0;
             }
@@ -189,7 +228,7 @@ void key(unsigned char c, int x, int y)
 {
     if (c==27){exit(0);}
     if(locked==0){
-    if (c=='f'){glutTimerFunc(10, temp, 1);}
+    if (c=='f'){glutTimerFunc(10, temp, turno);}
     if (c=='r'){reiniciar();}
     }
     glutPostRedisplay();
@@ -208,6 +247,13 @@ void display(void){
     glTexCoord2f(0.0, 0.0);glVertex2f(0, 512);
     glTexCoord2f(1.0, 0.0);glVertex2f(1024, 512);
     glEnd();
+    glPopMatrix();
+    
+    glPushMatrix();
+    glColor3f(0, 0,1);
+    glTranslatef(36,450,0);
+    glScalef(0.15, 0.15, 1);
+    dibujaTexto(&str[0]);
     glPopMatrix();
 
     switch(turno){
@@ -249,16 +295,42 @@ void display(void){
             break;
         case 2:
             glPushMatrix();
-            usarArco();
-            glTranslatef(814, 124, 0);
-            glRotatef(ang, 0, 0, 1);
+            glColor3f(1, 0, 0);
+            
+            glTranslatef(832, 166, 0);
+            glScalef(potencia*10, 1, 0);
             glBegin(GL_QUADS);
-            glTexCoord2f(1.0, 1.0);glVertex2f(0, 0);
-            glTexCoord2f(0.0, 1.0);glVertex2f(32, 0 );
-            glTexCoord2f(0.0, 0.0);glVertex2f(32, 32);
-            glTexCoord2f(1.0, 0.0);glVertex2f(0, 32);
+            glVertex2f(0, 0);
+            glVertex2f(1, 0);
+            glVertex2f(1, 10);
+            glVertex2f(0, 10);
             glEnd();
             glPopMatrix();
+            
+            glColor3f(1, 1, 1);
+            glPushMatrix();
+            usarArco();
+            glTranslatef(846, 124, 0);
+            glRotatef(-ang, 0, 0, 1);
+            glScalef(-1, 1, 0);
+            glBegin(GL_QUADS);
+            glTexCoord2f(1.0, 1.0);glVertex2f(32, 0);
+            glTexCoord2f(0.0, 1.0);glVertex2f(0, 0 );
+            glTexCoord2f(0.0, 0.0);glVertex2f(0, 32);
+            glTexCoord2f(1.0, 0.0);glVertex2f(32, 32);
+            glEnd();
+            glPopMatrix();
+            
+            if(flecha==1){
+                glPushMatrix();
+                glTranslatef(814, 156, 0);
+                glTranslatef(x, y, 0);
+                glScalef(-1, 1, 0);
+                dibujarFlecha();
+                glPopMatrix();
+            }
+            posx = 814+x;
+            posy = 156+y;
             break;
     }
     
@@ -277,8 +349,8 @@ int main(int argc, char **argv){
     glEnable(GL_TEXTURE_2D);
     glClearColor(0.0,0.0,0.0,0);
     gluOrtho2D(0,1024,0,512);
-    
-    
+    srand (time(NULL));
+    generarViento();
     glutDisplayFunc(display);
     glutKeyboardFunc(key);
     glutSpecialFunc(spkey);
