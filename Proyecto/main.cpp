@@ -9,10 +9,21 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include <GLUT/GLUT.h>
+#include <math.h>
+#include <time.h>
+#define PI 3.14159265
 
 int ancho=256,alto=256,px=0,py=0;
+int anchoB=1024,altoB=512;
+int anchoArc=32,altoArc=32;
+float tiempo=0;
 float ang=0;
-double x1=0,y1=0;
+double x=0,y=0;
+double posx=0,posy=0;
+int turno=1;
+int flecha=0;
+int locked =0;
+int potencia = 0;
 
 unsigned char * datosBg;
 unsigned char * datosPer;
@@ -23,67 +34,23 @@ unsigned char * datosTi;
 
 void leerBackground(){
     FILE *imagen;
-    imagen=fopen("/Users/arturo/Pictures/Proyecto/paisaje.data","r");
+    imagen=fopen("/Users/arturo/Pictures/Proyecto/mapaf.data","r");
     if(imagen==NULL){printf("Error: No imagen");}
     else{printf("Imagen cargada correctamente");}
     
-    datosBg=(unsigned char*)malloc(ancho*alto*3);
-    fread(datosBg,ancho*alto*3,1,imagen);
+    datosBg=(unsigned char*)malloc(anchoB*altoB*3);
+    fread(datosBg,anchoB*altoB*3,1,imagen);
     fclose(imagen);
-}
-
-void leerPersonaje(){
-    FILE *imagen2;
-    imagen2=fopen("/Users/arturo/Pictures/geometric2.data","r");
-    if(imagen2==NULL){printf("Error: No imagen");}
-    else{printf("Imagen cargada correctamente");}
-    
-    datosPer=(unsigned char*)malloc(ancho*alto*3);
-    fread(datosPer,ancho*alto*3,1,imagen2);
-    fclose(imagen2);
 }
 
 void leerArco(){
     FILE *imagen2;
-    imagen2=fopen("/Users/arturo/Pictures/geometric2.data","r");
+    imagen2=fopen("/Users/arturo/Pictures/Proyecto/arco3.data","r");
     if(imagen2==NULL){printf("Error: No imagen");}
     else{printf("Imagen cargada correctamente");}
     
-    datosAr=(unsigned char*)malloc(ancho*alto*3);
-    fread(datosAr,ancho*alto*3,1,imagen2);
-    fclose(imagen2);
-}
-
-void leerIsla(){
-    FILE *imagen2;
-    imagen2=fopen("/Users/arturo/Pictures/Proyecto/isla.data","r");
-    if(imagen2==NULL){printf("Error: No imagen");}
-    else{printf("Imagen cargada correctamente");}
-    
-    datosIs=(unsigned char*)malloc(ancho*alto*3);
-    fread(datosIs,ancho*alto*3,1,imagen2);
-    fclose(imagen2);
-}
-
-void leerFlecha(){
-    FILE *imagen2;
-    imagen2=fopen("/Users/arturo/Pictures/geometric2.data","r");
-    if(imagen2==NULL){printf("Error: No imagen");}
-    else{printf("Imagen cargada correctamente");}
-    
-    datosFl=(unsigned char*)malloc(ancho*alto*3);
-    fread(datosFl,ancho*alto*3,1,imagen2);
-    fclose(imagen2);
-}
-
-void leerTierra(){
-    FILE *imagen2;
-    imagen2=fopen("/Users/arturo/Pictures/geometric2.data","r");
-    if(imagen2==NULL){printf("Error: No imagen");}
-    else{printf("Imagen cargada correctamente");}
-    
-    datosTi=(unsigned char*)malloc(ancho*alto*3);
-    fread(datosTi,ancho*alto*3,1,imagen2);
+    datosAr=(unsigned char*)malloc(anchoArc*altoArc*3);
+    fread(datosAr,anchoArc*altoArc*3,1,imagen2);
     fclose(imagen2);
 }
 
@@ -92,15 +59,7 @@ void usarBackground(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ancho, alto, 0, GL_RGB, GL_UNSIGNED_BYTE, datosBg);
-}
-
-void usarPersonaje(){
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ancho, alto, 0, GL_RGB, GL_UNSIGNED_BYTE, datosPer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, anchoB, altoB, 0, GL_RGB, GL_UNSIGNED_BYTE, datosBg);
 }
 
 void usarArco(){
@@ -108,62 +67,221 @@ void usarArco(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ancho, alto, 0, GL_RGB, GL_UNSIGNED_BYTE, datosAr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, anchoArc, altoArc, 0, GL_RGB, GL_UNSIGNED_BYTE, datosAr);
 }
 
-void usarIsla(){
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ancho, alto, 0, GL_RGB, GL_UNSIGNED_BYTE, datosIs);
+void spkey(int key,int x, int y){
+    if(locked==0){
+    switch(key){
+        case GLUT_KEY_UP:
+            ang+=1;
+            break;
+        case GLUT_KEY_DOWN:
+            ang-=1;
+            break;
+        case GLUT_KEY_RIGHT:
+            if(potencia<10)
+            potencia++;
+            break;
+        case GLUT_KEY_LEFT:
+            if(potencia>0)
+            potencia--;
+            break;
+    }
+    }
+    glutPostRedisplay();
 }
 
-void usarFlecha(){
+void dibujarFlecha(){
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2f(0,2);
+    glVertex2f(0,9);
+    glVertex2f(1,9);
+    glVertex2f(1,2);
+    glEnd();
     
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2f(1,3);
+    glVertex2f(1,8);
+    glVertex2f(2,8);
+    glVertex2f(2,3);
+    glEnd();
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ancho, alto, 0, GL_RGB, GL_UNSIGNED_BYTE, datosFl);
+    
+    
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2f(2,2);
+    glVertex2f(19,2);
+    glVertex2f(19,5);
+    glVertex2f(2,5);
+    glEnd();
+    
+    
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2f(19,4);
+    glVertex2f(20,4);
+    glVertex2f(20,5);
+    glVertex2f(19,5);
+    glEnd();
+    
+    
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2f(18,3);
+    glVertex2f(19,3);
+    glVertex2f(19,6);
+    glVertex2f(18,6);
+    glEnd();
+    
+
 }
 
-void usarTierra(){
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ancho, alto, 0, GL_RGB, GL_UNSIGNED_BYTE, datosTi);
+int checarLimites(float x,float y){
+    if ((x<566)&&(y<214)&&(x>390)&&(y>96)) {
+        return 1;
+    }else if(y<96){
+        return 1;
+    }else if(x<0){
+        return 1;
+    }else if(x>1024){
+        return 1;
+    }
+    return 0;
 }
+
+void reiniciar(){
+    x=0;
+    y=0;
+    tiempo=0;
+    ang=0;
+    posx= 0;
+    posy=0;
+    flecha=0;
+    glutPostRedisplay();
+}
+
+void temp(int value){
+    switch (value) {
+        case 1:
+            locked=1;
+            flecha=1;
+            x = (50+potencia*10)*tiempo*cos(7*PI/36+ang/36)-(10*pow(tiempo,2))/2;
+            y = (50+potencia*10)*tiempo*sin(7*PI/36+ang/36)-(9.81*pow(tiempo, 2))/2;
+            printf("(%f,%f)\n",x,y);
+            tiempo+=0.05;
+            glutPostRedisplay();
+            if(checarLimites(posx, posy)!=1){
+                glutTimerFunc(10, temp, 1);
+            }else{
+                locked =0;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void key(unsigned char c, int x, int y)
+{
+    if (c==27){exit(0);}
+    if(locked==0){
+    if (c=='f'){glutTimerFunc(10, temp, 1);}
+    if (c=='r'){reiniciar();}
+    }
+    glutPostRedisplay();
+}
+
 
 void display(void){
     glClear(GL_COLOR_BUFFER_BIT);
     
+    glColor3f(1, 1, 1);
     glPushMatrix();
     usarBackground();
     glBegin(GL_QUADS);
-    glTexCoord2f(1.0, 1.0);glVertex2f(0, 0);
-    glTexCoord2f(0.0, 1.0);glVertex2f(600, 0 );
-    glTexCoord2f(0.0, 0.0);glVertex2f(600, 600);
-    glTexCoord2f(1.0, 0.0);glVertex2f(0, 600);
+    glTexCoord2f(1.0, 1.0);glVertex2f(1024, 0);
+    glTexCoord2f(0.0, 1.0);glVertex2f(0, 0 );
+    glTexCoord2f(0.0, 0.0);glVertex2f(0, 512);
+    glTexCoord2f(1.0, 0.0);glVertex2f(1024, 512);
     glEnd();
     glPopMatrix();
+
+    switch(turno){
+        case 1:
+            glPushMatrix();
+            glColor3f(1, 0, 0);
+            
+            glTranslatef(36, 166, 0);
+            glScalef(potencia*10, 1, 0);
+            glBegin(GL_QUADS);
+            glVertex2f(0, 0);
+            glVertex2f(1, 0);
+            glVertex2f(1, 10);
+            glVertex2f(0, 10);
+            glEnd();
+            glPopMatrix();
+            
+            glColor3f(1, 1, 1);
+            glPushMatrix();
+            usarArco();
+            glTranslatef(78, 124, 0);
+            glRotatef(ang, 0, 0, 1);
+            glBegin(GL_QUADS);
+            glTexCoord2f(1.0, 1.0);glVertex2f(32, 0);
+            glTexCoord2f(0.0, 1.0);glVertex2f(0, 0 );
+            glTexCoord2f(0.0, 0.0);glVertex2f(0, 32);
+            glTexCoord2f(1.0, 0.0);glVertex2f(32, 32);
+            glEnd();
+            glPopMatrix();
+            if(flecha==1){
+                glPushMatrix();
+                glTranslatef(110, 156, 0);
+                glTranslatef(x, y, 0);
+                dibujarFlecha();
+                glPopMatrix();
+            }
+            posx = 110+x;
+            posy = 156+y;
+            break;
+        case 2:
+            glPushMatrix();
+            usarArco();
+            glTranslatef(814, 124, 0);
+            glRotatef(ang, 0, 0, 1);
+            glBegin(GL_QUADS);
+            glTexCoord2f(1.0, 1.0);glVertex2f(0, 0);
+            glTexCoord2f(0.0, 1.0);glVertex2f(32, 0 );
+            glTexCoord2f(0.0, 0.0);glVertex2f(32, 32);
+            glTexCoord2f(1.0, 0.0);glVertex2f(0, 32);
+            glEnd();
+            glPopMatrix();
+            break;
+    }
+    
+    
     
     glFlush();
 }
 
 int main(int argc, char **argv){
     glutInit(&argc, argv);
-    glutInitWindowSize(600,600);
+    glutInitWindowSize(1024,512);
     glutInitWindowPosition(10,10);
-    glutCreateWindow ("Textura SintÈtica");
+    glutCreateWindow ("Proyecto");
     leerBackground();
-    leerIsla();
+    leerArco();
     glEnable(GL_TEXTURE_2D);
     glClearColor(0.0,0.0,0.0,0);
-    gluOrtho2D(0,600,0,600);
+    gluOrtho2D(0,1024,0,512);
     
     
     glutDisplayFunc(display);
+    glutKeyboardFunc(key);
+    glutSpecialFunc(spkey);
     glutMainLoop();
     
     return 0;
