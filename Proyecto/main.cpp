@@ -3,7 +3,7 @@
 //  Proyecto
 //
 //  Created by Arturo Garcia on 13/03/18.
-//  Copyright Â© 2018 Arturo Garcia. All rights reserved.
+//  Copyright © 2018 Arturo Garcia. All rights reserved.
 //
 
 #include<stdio.h>
@@ -46,7 +46,7 @@ void leerBackground(){
     imagen=fopen("/Users/arturo/Pictures/Proyecto/mapaf.data","r");
     if(imagen==NULL){printf("Error: No imagen");}
     else{printf("Imagen cargada correctamente");}
-    
+
     datosBg=(unsigned char*)malloc(anchoB*altoB*3);
     fread(datosBg,anchoB*altoB*3,1,imagen);
     fclose(imagen);
@@ -57,25 +57,25 @@ void leerArco(){
     imagen2=fopen("/Users/arturo/Pictures/Proyecto/arco3.data","r");
     if(imagen2==NULL){printf("Error: No imagen");}
     else{printf("Imagen cargada correctamente");}
-    
+
     datosAr=(unsigned char*)malloc(anchoArc*altoArc*3);
     fread(datosAr,anchoArc*altoArc*3,1,imagen2);
     fclose(imagen2);
 }
 
 void usarBackground(){
-    
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
+
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, anchoB, altoB, 0, GL_RGB, GL_UNSIGNED_BYTE, datosBg);
 }
 
 void usarArco(){
-    
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
+
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, anchoArc, altoArc, 0, GL_RGB, GL_UNSIGNED_BYTE, datosAr);
 }
 
@@ -109,7 +109,7 @@ void dibujarFlecha(){
     glVertex2f(1,9);
     glVertex2f(1,2);
     glEnd();
-    
+
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
     glVertex2f(1,3);
@@ -117,9 +117,9 @@ void dibujarFlecha(){
     glVertex2f(2,8);
     glVertex2f(2,3);
     glEnd();
-    
-    
-    
+
+
+
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
     glVertex2f(2,2);
@@ -127,8 +127,8 @@ void dibujarFlecha(){
     glVertex2f(19,5);
     glVertex2f(2,5);
     glEnd();
-    
-    
+
+
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
     glVertex2f(19,4);
@@ -136,8 +136,8 @@ void dibujarFlecha(){
     glVertex2f(20,5);
     glVertex2f(19,5);
     glEnd();
-    
-    
+
+
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
     glVertex2f(18,3);
@@ -145,7 +145,7 @@ void dibujarFlecha(){
     glVertex2f(19,6);
     glVertex2f(18,6);
     glEnd();
-    
+
 
 }
 
@@ -237,7 +237,7 @@ void key(unsigned char c, int x, int y)
 
 void display(void){
     glClear(GL_COLOR_BUFFER_BIT);
-    
+
     glColor3f(1, 1, 1);
     glPushMatrix();
     usarBackground();
@@ -248,7 +248,7 @@ void display(void){
     glTexCoord2f(1.0, 0.0);glVertex2f(1024, 512);
     glEnd();
     glPopMatrix();
-    
+
     glPushMatrix();
     glColor3f(0, 0,1);
     glTranslatef(36,450,0);
@@ -256,11 +256,35 @@ void display(void){
     dibujaTexto(&str[0]);
     glPopMatrix();
 
+    glPushMatrix();
+    glColor3f(0,1,0);
+    glTranslatef(40,90,0);
+    glScalef(vida1/2,1,0);
+    glBegin(GL_QUADS);
+    glVertex2f(0,0);
+    glVertex2f(10,0);
+    glColor3f(1,0,0);
+    glVertex2f(10,1);
+    glVertex2f(10,1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3f(0,1,0);
+    glTranslatef(873,90,0);
+    glScalef(vida2/2,1,0);
+    glBegin(GL_QUADS);
+    glVertex2f(0,0);
+    glVertex2f(10,0);
+    glColor3f(0,1,0);
+    glVertex2f(10,1);
+    glVertex2f(10,1);
+    glPopMatrix();
+
     switch(turno){
         case 1:
             glPushMatrix();
             glColor3f(1, 0, 0);
-            
+
             glTranslatef(36, 166, 0);
             glScalef(potencia*10, 1, 0);
             glBegin(GL_QUADS);
@@ -270,7 +294,7 @@ void display(void){
             glVertex2f(0, 10);
             glEnd();
             glPopMatrix();
-            
+
             glColor3f(1, 1, 1);
             glPushMatrix();
             usarArco();
@@ -296,7 +320,7 @@ void display(void){
         case 2:
             glPushMatrix();
             glColor3f(1, 0, 0);
-            
+
             glTranslatef(832, 166, 0);
             glScalef(potencia*10, 1, 0);
             glBegin(GL_QUADS);
@@ -306,7 +330,7 @@ void display(void){
             glVertex2f(0, 10);
             glEnd();
             glPopMatrix();
-            
+
             glColor3f(1, 1, 1);
             glPushMatrix();
             usarArco();
@@ -320,7 +344,7 @@ void display(void){
             glTexCoord2f(1.0, 0.0);glVertex2f(32, 32);
             glEnd();
             glPopMatrix();
-            
+
             if(flecha==1){
                 glPushMatrix();
                 glTranslatef(814, 156, 0);
@@ -333,9 +357,9 @@ void display(void){
             posy = 156+y;
             break;
     }
-    
-    
-    
+
+
+
     glFlush();
 }
 
@@ -355,7 +379,6 @@ int main(int argc, char **argv){
     glutKeyboardFunc(key);
     glutSpecialFunc(spkey);
     glutMainLoop();
-    
+
     return 0;
 }
-
