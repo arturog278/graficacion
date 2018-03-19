@@ -20,19 +20,17 @@ float tiempo=0;
 float ang=0;
 double x=0,y=0;
 double posx=0,posy=0;
-int turno=2;
+int turno=1;
 int flecha=0;
 int locked =0;
 int potencia = 0;
 int viento = 0;
 char str[] = "";
+int hpP1 = 100;
+int hpP2 = 100;
 
 unsigned char * datosBg;
-unsigned char * datosPer;
 unsigned char * datosAr;
-unsigned char * datosIs;
-unsigned char * datosFl;
-unsigned char * datosTi;
 
 void dibujaTexto(char * mensaje)
 {
@@ -167,6 +165,14 @@ void generarViento(){
 int checarLimites(float x,float y){
     if ((x<566)&&(y<214)&&(x>390)&&(y>96)) {
         return 1;
+    }else if((x>54)&&(x<74)&&(y>113)&&(y<147)){
+        return 2;
+    }else if((x>54)&&(x<78)&&(y>148)&&(y<181)){
+        return 3;
+    }else if((x>844)&&(x<864)&&(y>113)&&(y<147)){
+        return 4;
+    }else if((x>840)&&(x<864)&&(y>148)&&(y<181)){
+        return 5;
     }else if(y<96){
         return 1;
     }else if(x<0){
@@ -192,6 +198,7 @@ void reiniciar(){
 void temp(int value){
     switch (value) {
         case 1:
+        {
             locked=1;
             flecha=1;
             x = (50+potencia*10)*tiempo*cos(7*PI/36+ang/36)-(viento*pow(tiempo,2))/2;
@@ -199,13 +206,28 @@ void temp(int value){
             printf("(%f,%f)\n",x,y);
             tiempo+=0.05;
             glutPostRedisplay();
-            if(checarLimites(posx, posy)!=1){
+            int res = checarLimites(posx, posy);
+            if(res==0){
                 glutTimerFunc(10, temp, 1);
+            }else if(res==2){
+                hpP1-=25;
+                locked = 0;
+            }else if(res==3){
+                hpP1-=15;
+                locked = 0;
+            }else if(res==4){
+                hpP2-=25;
+                locked = 0;
+            }else if(res==5){
+                hpP2-=15;
+                locked = 0;
             }else{
-                locked =0;
+                locked = 0;
             }
             break;
+        }
         case 2:
+        {
             locked=1;
             flecha=1;
             x = (50+potencia*10)*tiempo*cos(25*PI/36-ang/36)-(viento*pow(tiempo,2))/2;
@@ -213,12 +235,26 @@ void temp(int value){
             printf("(%f,%f)\n",x,y);
             tiempo+=0.05;
             glutPostRedisplay();
-            if(checarLimites(posx, posy)!=1){
+            int res = checarLimites(posx, posy);
+            if(res==0){
                 glutTimerFunc(10, temp, 2);
+            }else if(res==2){
+                hpP1-=25;
+                locked = 0;
+            }else if(res==3){
+                hpP1-=15;
+                locked = 0;
+            }else if(res==4){
+                hpP2-=25;
+                locked = 0;
+            }else if(res==5){
+                hpP2-=15;
+                locked = 0;
             }else{
-                locked =0;
+                locked = 0;
             }
             break;
+        }
         default:
             break;
     }
@@ -232,6 +268,17 @@ void key(unsigned char c, int x, int y)
     if (c=='r'){reiniciar();}
     }
     glutPostRedisplay();
+}
+
+void generarHPBar(){
+    glBegin(GL_QUADS);
+    glColor3f(1, 0, 0);
+    glVertex2f(0, 0);
+    glVertex2f(10, 0);
+    glColor3f(0, 1, 0);
+    glVertex2f(10, 1);
+    glVertex2f(0, 1);
+    glEnd();
 }
 
 
@@ -297,7 +344,7 @@ void display(void){
             glPushMatrix();
             glColor3f(1, 0, 0);
             
-            glTranslatef(832, 166, 0);
+            glTranslatef(750, 166, 0);
             glScalef(potencia*10, 1, 0);
             glBegin(GL_QUADS);
             glVertex2f(0, 0);
@@ -334,6 +381,17 @@ void display(void){
             break;
     }
     
+    glPushMatrix();
+    glTranslatef(20, 90, 0);
+    glScalef(1, hpP1, 0);
+    generarHPBar();
+    glPopMatrix();
+    
+    glPushMatrix();
+    glTranslatef(880, 90, 0);
+    glScalef(1, hpP2, 0);
+    generarHPBar();
+    glPopMatrix();
     
     
     glFlush();
