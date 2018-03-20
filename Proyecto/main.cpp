@@ -21,6 +21,8 @@ float ang=0;
 float mensaje=0;
 double x=0,y=0;
 double posx=0,posy=0;
+double centx=0,centy=0;
+double dir = 0, dif = 0;
 double xant=0,yant=0;
 double pend;
 int turno=1;
@@ -30,8 +32,9 @@ int potencia = 0;
 int viento = 0;
 char str[] = "";
 char str2[]= "Presione ENTER para continuar";
-int hpP1 = 15;
-int hpP2 = 15;
+int hpP1 = 100;
+int hpP2 = 100;
+
 
 unsigned char * datosBg;
 unsigned char * datosAr;
@@ -185,17 +188,60 @@ void generarViento(){
         sprintf(str, "%d --",viento);
     }
 }
-
+/*
+void dibujarPersonajes(){
+    glPushMatrix();
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(58, 120);
+    glVertex2f(82, 120);
+    glVertex2f(82, 148);
+    glVertex2f(58, 148);
+    glVertex2f(58, 120);
+    glEnd();
+    glPopMatrix();
+  
+    glPushMatrix();
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(58, 88);
+    glVertex2f(82, 88);
+    glVertex2f(82, 120);
+    glVertex2f(58, 120);
+    glVertex2f(58, 88);
+    glEnd();
+    glPopMatrix();
+    
+    glPushMatrix();
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(58, 120);
+    glVertex2f(82, 120);
+    glVertex2f(82, 148);
+    glVertex2f(58, 148);
+    glVertex2f(58, 120);
+    glEnd();
+    glPopMatrix();
+    
+    glPushMatrix();
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(58, 88);
+    glVertex2f(82, 88);
+    glVertex2f(82, 120);
+    glVertex2f(58, 120);
+    glVertex2f(58, 88);
+    glEnd();
+    glPopMatrix();
+   
+}
+*/
 int checarLimites(float x,float y){
     if ((x<566)&&(y<214)&&(x>390)&&(y>96)) {
         return 1;
-    }else if((x>54)&&(x<74)&&(y>95)&&(y<112)){
+    }else if((x>58)&&(x<82)&&(y>120)&&(y<148)){
         return 2;
-    }else if((x>54)&&(x<74)&&(y>113)&&(y<147)){
+    }else if((x>58)&&(x<82)&&(y>88)&&(y<120)){
         return 3;
-    }else if((x>844)&&(x<864)&&(y>95)&&(y<112)){
+    }else if((x>842)&&(x<868)&&(y>120)&&(y<148)){
         return 4;
-    }else if((x>844)&&(x<864)&&(y>113)&&(y<147)){
+    }else if((x>842)&&(x<868)&&(y>88)&&(y<120)){
         return 5;
     }else if(y<96){
         return 1;
@@ -210,6 +256,13 @@ int checarLimites(float x,float y){
 void reiniciar(){
     x=0;
     y=0;
+    xant = 0;
+    yant = 0;
+    centx = 0;
+    centy = 0;
+    pend = 0;
+    dir = 0;
+    dif = 0;
     tiempo=0;
     ang=0;
     posx= 0;
@@ -227,25 +280,32 @@ void temp(int value){
             flecha=1;
             x = (50+potencia*10)*tiempo*cos(5*PI/36+ang*PI/180)-(viento*pow(tiempo,2))/2;
             y = (50+potencia*10)*tiempo*sin(5*PI/36+ang*PI/180)-(9.81*pow(tiempo, 2))/2;
-            printf("(%f,%f)\n",x,y);
             tiempo+=0.05;
             glutPostRedisplay();
             int res = checarLimites(posx, posy);
             if(res==0){
                 glutTimerFunc(10, temp, 1);
             }else if(res==2){
-                hpP1-=25;
+                hpP1-=35;
+                if(hpP1<0)
+                    hpP1=0;
                 locked = 1;
             }else if(res==3){
-                hpP1-=15;
+                hpP1-=20;
+                if(hpP1<0)
+                    hpP1=0;
                 locked = 1;
 
             }else if(res==4){
-                hpP2-=25;
+                hpP2-=35;
+                if(hpP2<0)
+                    hpP2=0;
                 locked = 1;
 
             }else if(res==5){
-                hpP2-=15;
+                hpP2-=20;
+                if(hpP2<0)
+                    hpP2=0;
                 locked = 1;
 
             }else{
@@ -260,23 +320,30 @@ void temp(int value){
             flecha=1;
             x = (50+potencia*10)*tiempo*cos(31*PI/36-ang*PI/180)-(viento*pow(tiempo,2))/2;
             y = (50+potencia*10)*tiempo*sin(31*PI/36-ang*PI/180)-(9.81*pow(tiempo, 2))/2;
-            printf("(%f,%f)\n",x,y);
             tiempo+=0.05;
             glutPostRedisplay();
             int res = checarLimites(posx, posy);
             if(res==0){
                 glutTimerFunc(10, temp, 2);
             }else if(res==2){
-                hpP1-=25;
+                hpP1-=35;
+                if(hpP1<0)
+                    hpP1=0;
                 locked = 1;
             }else if(res==3){
-                hpP1-=15;
+                hpP1-=20;
+                if(hpP1<0)
+                    hpP1=0;
                 locked = 1;
             }else if(res==4){
-                hpP2-=25;
+                hpP2-=35;
+                if(hpP2<0)
+                    hpP2=0;
                 locked = 1;
             }else if(res==5){
-                hpP2-=15;
+                hpP2-=20;
+                if(hpP2<0)
+                    hpP2=0;
                 locked = 1;
             }else{
                 locked = 1;
@@ -372,6 +439,8 @@ void display(void){
     glScalef(mensaje, mensaje, 1);
     dibujaTexto(&str2[0]);
     glPopMatrix();
+    
+    //dibujarPersonajes();
 
     switch(turno){
         case 1:
@@ -408,12 +477,18 @@ void display(void){
                 dibujarFlecha();
                 glPopMatrix();
             }
-            xant = posx;
-            yant = posy;
-            posx = 130+x;
-            posy = 159+y;
-            pend = atan((posy-yant)/(posx-xant))*180/PI;
-            printf("%f",pend);
+            xant = centx;
+            yant = centy;
+            centx = 110 + x;
+            centy = 159 + y;
+            dir = centx-xant;
+            if(dir<0)
+                dif = 180;
+            else
+                dif = 0;
+            pend = atan((centy-yant)/(dir))*180/PI+dif;
+            posx = 20*cos(pend*PI/180)+centx;
+            posy = 20*sin(pend*PI/180)+centy;
             break;
         case 2:
             glPushMatrix();
@@ -442,7 +517,6 @@ void display(void){
             glTexCoord2f(1.0, 0.0);glVertex2f(32, 32);
             glEnd();
             glPopMatrix();
-            
             if(flecha==1){
                 glPushMatrix();
                 glTranslatef(814, 156, 0);
@@ -452,12 +526,18 @@ void display(void){
                 dibujarFlecha();
                 glPopMatrix();
             }
-            xant = posx;
-            yant = posy;
-            posx = 794+x;
-            posy = 159+y;
-            pend = atan((posy-yant)/(posx-xant))*180/PI;
-            printf("%f",pend);
+            xant = centx;
+            yant = centy;
+            centx = 814+x;
+            centy = 159+y;
+            dir = centx-xant;
+            if(dir>0)
+                dif = 180;
+            else
+                dif = 0;
+            pend = atan((centy-yant)/(dir))*180/PI+dif;
+            posx = 20*cos(pend*PI/180+PI)+centx;
+            posy = 20*sin(pend*PI/180+PI )+centy;
             break;
     }
     
