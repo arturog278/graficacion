@@ -18,16 +18,20 @@ int anchoB=1024,altoB=512;
 int anchoArc=32,altoArc=32;
 float tiempo=0;
 float ang=0;
+float mensaje=0;
 double x=0,y=0;
 double posx=0,posy=0;
+double xant=0,yant=0;
+double pend;
 int turno=1;
 int flecha=0;
 int locked =0;
 int potencia = 0;
 int viento = 0;
 char str[] = "";
-int hpP1 = 100;
-int hpP2 = 100;
+char str2[]= "Presione ENTER para continuar";
+int hpP1 = 15;
+int hpP2 = 15;
 
 unsigned char * datosBg;
 unsigned char * datosAr;
@@ -102,46 +106,66 @@ void spkey(int key,int x, int y){
 void dibujarFlecha(){
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
+    glVertex2f(0,0);
     glVertex2f(0,2);
-    glVertex2f(0,9);
-    glVertex2f(1,9);
     glVertex2f(1,2);
+    glVertex2f(1,0);
     glEnd();
     
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
+    glVertex2f(1,1);
     glVertex2f(1,3);
-    glVertex2f(1,8);
-    glVertex2f(2,8);
     glVertex2f(2,3);
+    glVertex2f(2,1);
     glEnd();
     
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2f(0,7);
+    glVertex2f(0,5);
+    glVertex2f(1,5);
+    glVertex2f(1,7);
+    glEnd();
     
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2f(1,6);
+    glVertex2f(1,4);
+    glVertex2f(2,4);
+    glVertex2f(2,6);
+    glEnd();
     
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
     glVertex2f(2,2);
-    glVertex2f(19,2);
-    glVertex2f(19,5);
     glVertex2f(2,5);
+    glVertex2f(19,5);
+    glVertex2f(19,2);
     glEnd();
-    
     
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
+    glVertex2f(19,3);
     glVertex2f(19,4);
     glVertex2f(20,4);
-    glVertex2f(20,5);
-    glVertex2f(19,5);
+    glVertex2f(20,3);
     glEnd();
-    
     
     glBegin(GL_POLYGON);
     glColor3f(0,0,0);
-    glVertex2f(18,3);
-    glVertex2f(19,3);
-    glVertex2f(19,6);
+    glVertex2f(17,1);
+    glVertex2f(18,1);
     glVertex2f(18,6);
+    glVertex2f(17,6);
+    glEnd();
+    
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2f(16,0);
+    glVertex2f(17,0);
+    glVertex2f(17,7);
+    glVertex2f(16,7);
     glEnd();
     
 
@@ -165,13 +189,13 @@ void generarViento(){
 int checarLimites(float x,float y){
     if ((x<566)&&(y<214)&&(x>390)&&(y>96)) {
         return 1;
-    }else if((x>54)&&(x<74)&&(y>113)&&(y<147)){
+    }else if((x>54)&&(x<74)&&(y>95)&&(y<112)){
         return 2;
-    }else if((x>54)&&(x<78)&&(y>148)&&(y<181)){
+    }else if((x>54)&&(x<74)&&(y>113)&&(y<147)){
         return 3;
-    }else if((x>844)&&(x<864)&&(y>113)&&(y<147)){
+    }else if((x>844)&&(x<864)&&(y>95)&&(y<112)){
         return 4;
-    }else if((x>840)&&(x<864)&&(y>148)&&(y<181)){
+    }else if((x>844)&&(x<864)&&(y>113)&&(y<147)){
         return 5;
     }else if(y<96){
         return 1;
@@ -191,7 +215,7 @@ void reiniciar(){
     posx= 0;
     posy=0;
     flecha=0;
-    generarViento();
+    potencia = 0;
     glutPostRedisplay();
 }
 
@@ -199,10 +223,10 @@ void temp(int value){
     switch (value) {
         case 1:
         {
-            locked=1;
+            locked=2;
             flecha=1;
-            x = (50+potencia*10)*tiempo*cos(7*PI/36+ang/36)-(viento*pow(tiempo,2))/2;
-            y = (50+potencia*10)*tiempo*sin(7*PI/36+ang/36)-(9.81*pow(tiempo, 2))/2;
+            x = (50+potencia*10)*tiempo*cos(5*PI/36+ang*PI/180)-(viento*pow(tiempo,2))/2;
+            y = (50+potencia*10)*tiempo*sin(5*PI/36+ang*PI/180)-(9.81*pow(tiempo, 2))/2;
             printf("(%f,%f)\n",x,y);
             tiempo+=0.05;
             glutPostRedisplay();
@@ -211,27 +235,31 @@ void temp(int value){
                 glutTimerFunc(10, temp, 1);
             }else if(res==2){
                 hpP1-=25;
-                locked = 0;
+                locked = 1;
             }else if(res==3){
                 hpP1-=15;
-                locked = 0;
+                locked = 1;
+
             }else if(res==4){
                 hpP2-=25;
-                locked = 0;
+                locked = 1;
+
             }else if(res==5){
                 hpP2-=15;
-                locked = 0;
+                locked = 1;
+
             }else{
-                locked = 0;
+                locked = 1;
             }
+            
             break;
         }
         case 2:
         {
-            locked=1;
+            locked=2;
             flecha=1;
-            x = (50+potencia*10)*tiempo*cos(25*PI/36-ang/36)-(viento*pow(tiempo,2))/2;
-            y = (50+potencia*10)*tiempo*sin(25*PI/36-ang/36)-(9.81*pow(tiempo, 2))/2;
+            x = (50+potencia*10)*tiempo*cos(31*PI/36-ang*PI/180)-(viento*pow(tiempo,2))/2;
+            y = (50+potencia*10)*tiempo*sin(31*PI/36-ang*PI/180)-(9.81*pow(tiempo, 2))/2;
             printf("(%f,%f)\n",x,y);
             tiempo+=0.05;
             glutPostRedisplay();
@@ -240,32 +268,67 @@ void temp(int value){
                 glutTimerFunc(10, temp, 2);
             }else if(res==2){
                 hpP1-=25;
-                locked = 0;
+                locked = 1;
             }else if(res==3){
                 hpP1-=15;
-                locked = 0;
+                locked = 1;
             }else if(res==4){
                 hpP2-=25;
-                locked = 0;
+                locked = 1;
             }else if(res==5){
                 hpP2-=15;
-                locked = 0;
+                locked = 1;
             }else{
-                locked = 0;
+                locked = 1;
             }
             break;
         }
         default:
             break;
     }
+    if(locked==1)
+    {
+        if(hpP1<=0){
+            sprintf(str2,"Victoria del jugador 2");
+            locked=3;
+        }
+        else if(hpP2<=0){
+            sprintf(str2,"Victoria del jugador 1");
+            locked=3;
+        }
+        else{
+            sprintf(str2,"Presione ENTER para continuar");
+        }
+        mensaje=0.15;
+    }
 }
 
 void key(unsigned char c, int x, int y)
 {
     if (c==27){exit(0);}
+    if (c==13){
+        if(locked==1){
+            locked=0;
+            reiniciar();
+            mensaje=0;
+            if(turno==1)
+                turno = 2;
+            else{
+                turno = 1;
+                generarViento();
+            }
+        }
+        else if(locked==3){
+            locked=0;
+            reiniciar();
+            mensaje=0;
+            turno=1;
+            hpP2=100;
+            hpP1=100;
+        }
+    }
     if(locked==0){
-    if (c=='f'){glutTimerFunc(10, temp, turno);}
-    if (c=='r'){reiniciar();}
+    if (c==32){glutTimerFunc(10, temp, turno);}
     }
     glutPostRedisplay();
 }
@@ -297,10 +360,17 @@ void display(void){
     glPopMatrix();
     
     glPushMatrix();
-    glColor3f(0, 0,1);
+    glColor3f(0, 0, 1);
     glTranslatef(36,450,0);
     glScalef(0.15, 0.15, 1);
     dibujaTexto(&str[0]);
+    glPopMatrix();
+    
+    glPushMatrix();
+    glColor3f(1, 0, 0);
+    glTranslatef(358,284,0);
+    glScalef(mensaje, mensaje, 1);
+    dibujaTexto(&str2[0]);
     glPopMatrix();
 
     switch(turno){
@@ -334,11 +404,16 @@ void display(void){
                 glPushMatrix();
                 glTranslatef(110, 156, 0);
                 glTranslatef(x, y, 0);
+                glRotatef(pend, 0, 0, 1);
                 dibujarFlecha();
                 glPopMatrix();
             }
-            posx = 110+x;
-            posy = 156+y;
+            xant = posx;
+            yant = posy;
+            posx = 130+x;
+            posy = 159+y;
+            pend = atan((posy-yant)/(posx-xant))*180/PI;
+            printf("%f",pend);
             break;
         case 2:
             glPushMatrix();
@@ -373,11 +448,16 @@ void display(void){
                 glTranslatef(814, 156, 0);
                 glTranslatef(x, y, 0);
                 glScalef(-1, 1, 0);
+                glRotatef(-pend, 0, 0, 1);
                 dibujarFlecha();
                 glPopMatrix();
             }
-            posx = 814+x;
-            posy = 156+y;
+            xant = posx;
+            yant = posy;
+            posx = 794+x;
+            posy = 159+y;
+            pend = atan((posy-yant)/(posx-xant))*180/PI;
+            printf("%f",pend);
             break;
     }
     
