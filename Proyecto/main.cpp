@@ -53,7 +53,7 @@ void dibujaTexto(char * mensaje)
 
 void leerBackground(){
     FILE *imagen;
-    imagen=fopen("mapaf.data","r");
+    imagen=fopen("./mapaf.data","r");
     if(imagen==NULL){printf("Error: No imagen");}
     else{printf("Imagen cargada correctamente");}
     
@@ -64,7 +64,7 @@ void leerBackground(){
 
 void leerArco(){
     FILE *imagen2;
-    imagen2=fopen("arco3.data","r");
+    imagen2=fopen("./arco3.data","r");
     if(imagen2==NULL){printf("Error: No imagen");}
     else{printf("Imagen cargada correctamente");}
     
@@ -93,18 +93,20 @@ void spkey(int key,int x, int y){
     if(locked==0){
     switch(key){
         case GLUT_KEY_UP:
-            ang+=1;
+            if(ang<65)
+                ang+=1;
             break;
         case GLUT_KEY_DOWN:
-            ang-=1;
+            if(ang>-25)
+                ang-=1;
             break;
         case GLUT_KEY_RIGHT:
             if(potencia<10)
-            potencia++;
+                potencia++;
             break;
         case GLUT_KEY_LEFT:
             if(potencia>0)
-            potencia--;
+                potencia--;
             break;
     }
     }
