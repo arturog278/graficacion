@@ -48,7 +48,7 @@ void dibujaTexto(char * mensaje)
 
 void leerBackground(){
     FILE *imagen;
-    imagen=fopen("/Users/arturo/Pictures/Proyecto/mapaf.data","r");
+    imagen=fopen("mapaf.data","r");
     if(imagen==NULL){printf("Error: No imagen");}
     else{printf("Imagen cargada correctamente");}
     
@@ -59,7 +59,7 @@ void leerBackground(){
 
 void leerArco(){
     FILE *imagen2;
-    imagen2=fopen("/Users/arturo/Pictures/Proyecto/arco3.data","r");
+    imagen2=fopen("arco3.data","r");
     if(imagen2==NULL){printf("Error: No imagen");}
     else{printf("Imagen cargada correctamente");}
     
@@ -400,15 +400,32 @@ void key(unsigned char c, int x, int y)
     glutPostRedisplay();
 }
 
-void generarHPBar(){
-    glBegin(GL_QUADS);
-    glColor3f(1, 0, 0);
-    glVertex2f(0, 0);
-    glVertex2f(10, 0);
-    glColor3f(0, 1, 0);
-    glVertex2f(10, 1);
-    glVertex2f(0, 1);
-    glEnd();
+void generarHPBar(int jugador){
+    switch (jugador) {
+        case 1:
+            glBegin(GL_QUADS);
+            glColor3f(1, 0, 0);
+            glVertex2f(0, 0);
+            glVertex2f(10, 0);
+            glColor3f(1-hpP1/100.0, hpP1/100.0, 0);
+            glVertex2f(10, 1);
+            glVertex2f(0, 1);
+            glEnd();
+            break;
+        case 2:
+            glBegin(GL_QUADS);
+            glColor3f(1, 0, 0);
+            glVertex2f(0, 0);
+            glVertex2f(10, 0);
+            glColor3f(1-hpP2/100.0, hpP2/100.0, 0);
+            glVertex2f(10, 1);
+            glVertex2f(0, 1);
+            glEnd();
+            
+        default:
+            break;
+    }
+    
 }
 
 
@@ -544,13 +561,13 @@ void display(void){
     glPushMatrix();
     glTranslatef(20, 90, 0);
     glScalef(1, hpP1, 0);
-    generarHPBar();
+    generarHPBar(1);
     glPopMatrix();
     
     glPushMatrix();
     glTranslatef(880, 90, 0);
     glScalef(1, hpP2, 0);
-    generarHPBar();
+    generarHPBar(2);
     glPopMatrix();
     
     
