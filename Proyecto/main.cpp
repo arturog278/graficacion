@@ -202,31 +202,31 @@ void dibujarPersonajes(){
   
     glPushMatrix();
     glBegin(GL_LINE_STRIP);
-    glVertex2f(58, 88);
-    glVertex2f(82, 88);
+    glVertex2f(58, 83);
+    glVertex2f(82, 83);
     glVertex2f(82, 120);
     glVertex2f(58, 120);
-    glVertex2f(58, 88);
+    glVertex2f(58, 83);
     glEnd();
     glPopMatrix();
     
     glPushMatrix();
     glBegin(GL_LINE_STRIP);
-    glVertex2f(58, 120);
-    glVertex2f(82, 120);
-    glVertex2f(82, 148);
-    glVertex2f(58, 148);
-    glVertex2f(58, 120);
+    glVertex2f(842, 120);
+    glVertex2f(868, 120);
+    glVertex2f(868, 148);
+    glVertex2f(842, 148);
+    glVertex2f(842, 120);
     glEnd();
     glPopMatrix();
     
     glPushMatrix();
     glBegin(GL_LINE_STRIP);
-    glVertex2f(58, 88);
-    glVertex2f(82, 88);
-    glVertex2f(82, 120);
-    glVertex2f(58, 120);
-    glVertex2f(58, 88);
+    glVertex2f(842, 83);
+    glVertex2f(868, 83);
+    glVertex2f(868, 120);
+    glVertex2f(842, 120);
+    glVertex2f(842, 83);
     glEnd();
     glPopMatrix();
    
@@ -237,13 +237,13 @@ int checarLimites(float x,float y){
         return 1;
     }else if((x>58)&&(x<82)&&(y>120)&&(y<148)){
         return 2;
-    }else if((x>58)&&(x<82)&&(y>88)&&(y<120)){
+    }else if((x>58)&&(x<82)&&(y>83)&&(y<120)){
         return 3;
     }else if((x>842)&&(x<868)&&(y>120)&&(y<148)){
         return 4;
-    }else if((x>842)&&(x<868)&&(y>88)&&(y<120)){
+    }else if((x>842)&&(x<868)&&(y>83)&&(y<120)){
         return 5;
-    }else if(y<96){
+    }else if(y<84){
         return 1;
     }else if(x<0){
         return 1;
