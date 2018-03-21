@@ -6,9 +6,14 @@
 //  Copyright © 2018 Arturo Garcia. All rights reserved.
 //
 
+#ifdef __APPLE__
+#include <GLUT/GLUT.h>
+#else
+#include <windows.h>
+#include <GL/glut.h>
+#endif
 #include<stdio.h>
 #include<stdlib.h>
-#include <GLUT/GLUT.h>
 #include <math.h>
 #include <time.h>
 #define PI 3.14159265
@@ -30,7 +35,7 @@ int flecha=0;
 int locked =0;
 int potencia = 0;
 int viento = 0;
-char str[] = "";
+char str[] = "     ";
 char str2[]= "Presione ENTER para continuar";
 int hpP1 = 100;
 int hpP2 = 100;
