@@ -109,8 +109,8 @@ void spkey(int key,int x, int y){
                 potencia--;
             break;
     }
+            glutPostRedisplay();
     }
-    glutPostRedisplay();
 }
 
 void dibujarFlecha(){
@@ -391,6 +391,7 @@ void key(unsigned char c, int x, int y)
                 turno = 1;
                 generarViento();
             }
+                glutPostRedisplay();
         }
         else if(locked==3){
             locked=0;
@@ -399,12 +400,13 @@ void key(unsigned char c, int x, int y)
             turno=1;
             hpP2=100;
             hpP1=100;
+                glutPostRedisplay();
         }
     }
     if(locked==0){
     if (c==32){glutTimerFunc(10, temp, turno);}
+            glutPostRedisplay();
     }
-    glutPostRedisplay();
 }
 
 void generarHPBar(int jugador){
