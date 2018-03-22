@@ -39,6 +39,13 @@ char str[] = "     ";
 char str2[]= "Presione ENTER para continuar";
 int hpP1 = 100;
 int hpP2 = 100;
+int powerUpP1 = 0;
+int powerUpP2 = 0;
+int powerUp = 0;
+int poisonedP1 = 0;
+int poisonedP2 = 0;
+int turnoFreeze = 0;
+double r = 0,g = 0,b = 0;
 
 
 unsigned char * datosBg;
@@ -115,7 +122,7 @@ void spkey(int key,int x, int y){
 
 void dibujarFlecha(){
     glBegin(GL_POLYGON);
-    glColor3f(0,0,0);
+    glColor3f(r,g,b);
     glVertex2f(0,0);
     glVertex2f(0,2);
     glVertex2f(1,2);
@@ -123,7 +130,7 @@ void dibujarFlecha(){
     glEnd();
     
     glBegin(GL_POLYGON);
-    glColor3f(0,0,0);
+    glColor3f(r,g,b);
     glVertex2f(1,1);
     glVertex2f(1,3);
     glVertex2f(2,3);
@@ -131,7 +138,7 @@ void dibujarFlecha(){
     glEnd();
     
     glBegin(GL_POLYGON);
-    glColor3f(0,0,0);
+    glColor3f(r,g,b);
     glVertex2f(0,7);
     glVertex2f(0,5);
     glVertex2f(1,5);
@@ -139,7 +146,7 @@ void dibujarFlecha(){
     glEnd();
     
     glBegin(GL_POLYGON);
-    glColor3f(0,0,0);
+    glColor3f(r,g,b);
     glVertex2f(1,6);
     glVertex2f(1,4);
     glVertex2f(2,4);
@@ -147,7 +154,7 @@ void dibujarFlecha(){
     glEnd();
     
     glBegin(GL_POLYGON);
-    glColor3f(0,0,0);
+    glColor3f(r,g,b);
     glVertex2f(2,2);
     glVertex2f(2,5);
     glVertex2f(19,5);
@@ -155,7 +162,7 @@ void dibujarFlecha(){
     glEnd();
     
     glBegin(GL_POLYGON);
-    glColor3f(0,0,0);
+    glColor3f(r,g,b);
     glVertex2f(19,3);
     glVertex2f(19,4);
     glVertex2f(20,4);
@@ -163,7 +170,7 @@ void dibujarFlecha(){
     glEnd();
     
     glBegin(GL_POLYGON);
-    glColor3f(0,0,0);
+    glColor3f(r,g,b);
     glVertex2f(17,1);
     glVertex2f(18,1);
     glVertex2f(18,6);
@@ -171,7 +178,7 @@ void dibujarFlecha(){
     glEnd();
     
     glBegin(GL_POLYGON);
-    glColor3f(0,0,0);
+    glColor3f(r,g,b);
     glVertex2f(16,0);
     glVertex2f(17,0);
     glVertex2f(17,7);
@@ -260,6 +267,86 @@ int checarLimites(float x,float y){
     return 0;
 }
 
+void setPowerUp(){
+    int pUp = rand() % 4;
+    switch (pUp) {
+        case 0:
+            r = 0;g = 0; b = 0;
+            powerUp = 0;
+            break;
+        case 1:
+            r = 1;g = 0; b = 0;
+            powerUp = 1;
+            break;
+        case 2:
+            r = 0;g = 1; b = 0;
+            powerUp = 2;
+            break;
+        case 3:
+            r = 0;g = 0; b = 1;
+            powerUp = 3;
+            break;
+        default:
+            break;
+    }
+}
+
+void checkPowerUp(int playerAfected){
+    if(playerAfected==1){
+        switch (powerUp) {
+            case 1:
+                hpP1-=10;
+                break;
+            case 2:
+                poisonedP1 = 3;
+                break;
+            case 3:
+                turno = 2;
+                turnoFreeze = 1;
+                generarViento();
+                break;
+            default:
+                break;
+        }
+    }else if (playerAfected==2){
+        switch (powerUp) {
+            case 1:
+                hpP2-=10;
+                break;
+            case 2:
+                poisonedP2 = 3;
+                break;
+            case 3:
+                turno = 1;
+                turnoFreeze = 1;
+                generarViento();
+                break;
+            default:
+                break;
+        }
+    }
+    r=0;g=0;b=0;
+}
+
+void checkPoisoned(){
+    switch (turno) {
+        case 1:
+            if (poisonedP1!=0){
+                hpP1-=5;
+                poisonedP1--;
+            }
+            break;
+        case 2:
+            if (poisonedP2!=0){
+                hpP2-=5;
+                poisonedP2--;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
 void reiniciar(){
     x=0;
     y=0;
@@ -293,23 +380,27 @@ void temp(int value){
             if(res==0){
                 glutTimerFunc(10, temp, 1);
             }else if(res==2){
+                checkPowerUp(1);
                 hpP1-=35;
                 if(hpP1<0)
                     hpP1=0;
                 locked = 1;
             }else if(res==3){
+                checkPowerUp(1);
                 hpP1-=20;
                 if(hpP1<0)
                     hpP1=0;
                 locked = 1;
 
             }else if(res==4){
+                checkPowerUp(2);
                 hpP2-=35;
                 if(hpP2<0)
                     hpP2=0;
                 locked = 1;
 
             }else if(res==5){
+                checkPowerUp(2);
                 hpP2-=20;
                 if(hpP2<0)
                     hpP2=0;
@@ -333,21 +424,25 @@ void temp(int value){
             if(res==0){
                 glutTimerFunc(10, temp, 2);
             }else if(res==2){
+                checkPowerUp(1);
                 hpP1-=35;
                 if(hpP1<0)
                     hpP1=0;
                 locked = 1;
             }else if(res==3){
+                checkPowerUp(1);
                 hpP1-=20;
                 if(hpP1<0)
                     hpP1=0;
                 locked = 1;
             }else if(res==4){
+                checkPowerUp(2);
                 hpP2-=35;
                 if(hpP2<0)
                     hpP2=0;
                 locked = 1;
             }else if(res==5){
+                checkPowerUp(2);
                 hpP2-=20;
                 if(hpP2<0)
                     hpP2=0;
@@ -362,6 +457,7 @@ void temp(int value){
     }
     if(locked==1)
     {
+        checkPoisoned();
         if(hpP1<=0){
             sprintf(str2,"Victoria del jugador 2");
             locked=3;
@@ -385,11 +481,15 @@ void key(unsigned char c, int x, int y)
             locked=0;
             reiniciar();
             mensaje=0;
-            if(turno==1)
-                turno = 2;
-            else{
-                turno = 1;
-                generarViento();
+            if(turnoFreeze!=1){
+                if(turno==1)
+                    turno = 2;
+                else{
+                    turno = 1;
+                    generarViento();
+                }
+            }else{
+                turnoFreeze = 0;
             }
                 glutPostRedisplay();
         }
@@ -404,8 +504,11 @@ void key(unsigned char c, int x, int y)
         }
     }
     if(locked==0){
-    if (c==32){glutTimerFunc(10, temp, turno);}
-            glutPostRedisplay();
+        if (c==32){
+            setPowerUp();
+            glutTimerFunc(10, temp, turno);
+        }
+        glutPostRedisplay();
     }
 }
 
