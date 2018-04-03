@@ -39,8 +39,6 @@ char str[] = "     ";
 char str2[]= "Presione ENTER para continuar";
 int hpP1 = 100;
 int hpP2 = 100;
-int powerUpP1 = 0;
-int powerUpP2 = 0;
 int powerUp = 0;
 int poisonedP1 = 0;
 int poisonedP2 = 0;
@@ -117,6 +115,36 @@ void spkey(int key,int x, int y){
             break;
     }
             glutPostRedisplay();
+    }
+}
+
+void dibujarTray(){
+    float x1,y1;
+    switch (turno) {
+        case 1:
+            glColor3f(1, 0, 0);
+            glBegin(GL_LINES);
+            glVertex2f(110, 159);
+            for (float i=0; i<=5; i+=0.05) {
+                x1 = (50+potencia*10)*i*cos(5*PI/36+ang*PI/180)-(viento*pow(i,2))/2;
+                y1= (50+potencia*10)*i*sin(5*PI/36+ang*PI/180)-(9.81*pow(i, 2))/2;
+                glVertex2f(110+x1, 159+y1);
+            }
+            glEnd();
+            break;
+        case 2:
+            glColor3f(1, 0, 0);
+            glBegin(GL_LINES);
+            glVertex2f(814, 159);
+            for (float i=0; i<=5; i+=0.05) {
+                x1 = (50+potencia*10)*i*cos(31*PI/36-ang*PI/180)-(viento*pow(i,2))/2;
+                y1= (50+potencia*10)*i*sin(31*PI/36-ang*PI/180)-(9.81*pow(i, 2))/2;
+                glVertex2f(814+x1, 159+y1);
+            }
+            glEnd();
+            break;
+        default:
+            break;
     }
 }
 
@@ -500,6 +528,10 @@ void key(unsigned char c, int x, int y)
             turno=1;
             hpP2=100;
             hpP1=100;
+            powerUp = 0;
+            poisonedP1 = 0;
+            poisonedP2 = 0;
+            turnoFreeze = 0;
                 glutPostRedisplay();
         }
     }
@@ -574,6 +606,10 @@ void display(void){
     switch(turno){
         case 1:
             glPushMatrix();
+            dibujarTray();
+            glPopMatrix();
+            
+            glPushMatrix();
             glColor3f(1, 0, 0);
             
             glTranslatef(36, 166, 0);
@@ -585,6 +621,7 @@ void display(void){
             glVertex2f(0, 10);
             glEnd();
             glPopMatrix();
+            
             
             glColor3f(1, 1, 1);
             glPushMatrix();
@@ -598,6 +635,7 @@ void display(void){
             glTexCoord2f(1.0, 0.0);glVertex2f(32, 32);
             glEnd();
             glPopMatrix();
+            
             if(flecha==1){
                 glPushMatrix();
                 glTranslatef(110, 156, 0);
@@ -620,6 +658,10 @@ void display(void){
             posy = 20*sin(pend*PI/180)+centy;
             break;
         case 2:
+            glPushMatrix();
+            dibujarTray();
+            glPopMatrix();
+            
             glPushMatrix();
             glColor3f(1, 0, 0);
             
